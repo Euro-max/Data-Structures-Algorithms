@@ -24,10 +24,13 @@ public:
     void remove(const int&val);
     bool deleterAll(int i);
     void PrintBackWard(Node*);
+    Node*merge(Node*a,Node*b);
+    Node*FindMiddleNode();
     ~LinkedList();// Should be non-const reference to modify e
     int findSMAX();
     void Reverse(Node*);
-    void Conc(LinkedList &A, LinkedList&B);
+    pair<Node*,Node*> split(Node*);
+    Node*mergeSort(Node*);
 };
 
 LinkedList::LinkedList() {
@@ -193,7 +196,7 @@ void LinkedList::Conc(LinkedList &A, LinkedList&B){
     node->next = current->next; // New node points to successor
 current->next = node;
 }*/
-void LinkedList::remove(const int &val) {  // Changed from delete (delete is a keyword)
+void LinkedList::remove(const int &val) {  
         if (head == NULL) {
             return;
         }
@@ -285,7 +288,48 @@ void LinkedList::Reverse(Node*p){
   q->next=p;  //The new link points from the last node(head now) to its previous node
   p->next=NULL; //delete the old link pointing from the previous to the last node
 }
-
+Node* LinkedList::merge(Node*a,Node*b){
+    if(a==nullptr) return b;
+    if(b==nullptr) return a;
+    Node*c;
+    if(a->val<b->val){
+        c=a;
+        c->next=merge(a->next,b);
+}
+else if(b->val<a->val){
+c=b;
+c->next=merge(a,b->next);
+}
+return c;
+}
+Node*LinkedList::FindMiddleNode(){
+    Node*slow=head;
+    Node*fast=head;
+    while(fast!=NULL&&fast->next){
+        slow=slow->next;
+        fast=fast->next->next;
+}
+return slow;
+}
+pair<Node*,Node*>LinkedList::split(Node*head ){ //This is your linked list
+Node*a=head;
+Node*mid=FindMiddleNode(head);
+Node*b=mid->next;
+mid->next=NULL;
+return {a,b}; //pair<,> is used to return multiple values. Why? Because return a,b; will only return b since comma operator is of higher precedence.
+}
+Node* LinkedList::mergeSort(Node*head){
+if(head==nullptr || head->next=NULL){
+return head;
+}
+Node*mid=FindMiddleNode(head);
+Node*a=head;
+Node*b=mid->next;
+mid->next=NULL;
+a=mergeSort(a); //Recursive sort
+b=mergeSort(b);
+return merge(a,b);
+}
 int main() {
   
     return 0;
