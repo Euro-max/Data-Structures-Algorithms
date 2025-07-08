@@ -31,6 +31,7 @@ public:
     void Reverse(Node*);
     pair<Node*,Node*> split(Node*);
     Node*mergeSort(Node*);
+    Node*removeDuplicate(Node*);
 };
 
 LinkedList::LinkedList() {
@@ -329,6 +330,14 @@ mid->next=NULL;
 a=mergeSort(a); //Recursive sort
 b=mergeSort(b);
 return merge(a,b);
+}
+Node*LinkedList::removeDuplicate(Node*head){
+    Node*current=head;
+    while(current!=nullptr&&current->next!-nullptr){
+        if(current->val!=current->next->val) current=current->next;
+        else{ current=current->next->next;}
+    }
+    return head;
 }
 int main() {
   
