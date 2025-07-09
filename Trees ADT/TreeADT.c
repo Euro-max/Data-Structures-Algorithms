@@ -76,6 +76,14 @@ int FindMin(Node*root){ //Remember you are looking for the deepest left subtree 
 }
 return current->data;
 }
+Node*FindMin(Node*root){ //Remember you are looking for the deepest left subtree specifically the left node
+  if(!root)return -1;
+  Node*current=root;
+  while(current->left!=nullptr){
+    current=current->left;
+}
+return current;
+}
 int FindMax(Node*root){ //Remember you are looking for the deepest right subtree specifically the right node
   if(!root)return -1;
   Node*current=root;
@@ -122,4 +130,32 @@ bool isBST(Node*root,int minVal,int maxVal){
     return isBST(root->left, minVal, root->data) &&
            isBST(root->right, root->data, maxVal);
 }
+Node*delete(Node*root,int key){
+  if(!root)return root;
+  if(root->data<key) root->right=delete(root->right,key);
+  if(root->data>key) root->left=delete(root->left,key);
+  if(root->data==key){
+    if(root->left==nullptr&&root->right=nullptr) {
+      delete root;
+      root=NULL;
+    }
+    if(root->left==nullptr){
+      Node*temp=root;
+      root=root->right;
+      delete temp;
+    }
+      if(root->right==nullptr){
+      Node*temp=root;
+      root=root->left;
+      delete temp;
+    }
+    else{
+      Node*temp=FindMin(root->right);
+      root->data=temp->data;
+      root->right=delete(root->right,key);
+  }
+    return root;
+  }
+}
+    
 }
