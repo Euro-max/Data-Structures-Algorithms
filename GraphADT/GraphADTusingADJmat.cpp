@@ -1,6 +1,7 @@
 #include <iostream>
 using namespace std;
 #include <queue>
+#include<stack>
 const int V=4; //4 vertices #define V 4;
 class Graph{
 private:
@@ -43,15 +44,27 @@ void BFS(int start){
 }
     
 }
-void DFS(int node){
-  bool visited[V]={false};
-   visited[node] = true;
-    cout << node << " ";
+void DFS(int src){
+ stack<int> s;
+    bool visited[V] = {false};
 
-    for (int i = 0; i < V; ++i) {
-        if (AdjMat[node][i] == 1 && !visited[i]) {
-            DFS(i);
+    s.push(src);
+
+    while (!s.empty()) {
+        int current = s.top();
+        s.pop();
+
+        if (!visited[current]) {
+            cout << current << " ";
+            visited[current] = true;
+
+            // Push neighbors (in reverse order for DFS)
+            for (int i = V - 1; i >= 0; i--) {
+                if (adj[current][i] == 1 && !visited[i]) {
+                    s.push(i);
+                }
+            }
         }
     }
 }
-};
+}
