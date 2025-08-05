@@ -7,351 +7,310 @@ private:
         int val;
         Node* next;
     };
-    
+
     Node* head;
     Node* tail;
     Node* current;
-    
+
 public:
     LinkedList();
     void insert(const int &e);
     void insert(int val, int e);
-    void insertBEFORE(int i,int val);
+    void insertBEFORE(int i, int val);
     int findMiddleElement(LinkedList &A);
-    bool first(int &e);       // Should be non-const reference to modify e
-    bool next(int &e);  
+    bool first(int &e);
+    bool next(int &e);
     int counter();
-    void remove(const int&val);
+    void remove(const int &val);
     bool deleterAll(int i);
     void PrintBackWard(Node*);
-    Node*merge(Node*a,Node*b);
-    Node*FindMiddleNode();
-    ~LinkedList();// Should be non-const reference to modify e
+    LinkedList::Node* merge(LinkedList::Node *a, LinkedList::Node *b);
+    LinkedList::Node* FindMiddleNode();
+    ~LinkedList();
     int findSMAX();
     void Reverse(Node*);
-    pair<Node*,Node*> split(Node*);
-    Node*mergeSort(Node*);
-    Node*PrintwithNoDuplicates(Node*);
-    Node*removeDuplicates(Node*);
+    pair<LinkedList::Node*, LinkedList::Node*> split(LinkedList::Node*);
+    LinkedList::Node* mergeSort(LinkedList::Node*);
+    LinkedList::Node* PrintwithNoDuplicates(LinkedList::Node*);
+    LinkedList::Node* removeDuplicates(LinkedList::Node*);
+    void Conc(LinkedList &A, LinkedList &B);
+
+    Node* getHead() { return head; } // helper to access private head
 };
 
 LinkedList::LinkedList() {
-    head = NULL;
+    head = nullptr;
     tail = nullptr;
     current = nullptr;
 }
 
-  int LinkedList::findMiddleElement(LinkedList &A){
-      Node*slow=A.head;
-      Node*fast=A.head;
-      while(fast->next!=NULL){
-          fast=fast->next->next;
-          slow=slow->next;
-      }
-      return slow->val;
-     
-  }
- bool LinkedList::deleterAll(int i) {
-    if (head == nullptr) return false;  // Empty list case
-    
-    Node* current = head;
-    bool deletedAny = false;  // Track if we deleted anything
-    
-    // Need to handle head node separately
-    if (head->val == i) {
+int LinkedList::findMiddleElement(LinkedList &A) {
+    Node* slow = A.head;
+    Node* fast = A.head;
+    while (fast && fast->next) {
+        fast = fast->next->next;
+        slow = slow->next;
+    }
+    return slow ? slow->val : -1;
+}
+
+bool LinkedList::deleterAll(int i) {
+    if (!head) return false;
+    bool deletedAny = false;
+    while (head && head->val == i) {
         Node* temp = head;
         head = head->next;
         delete temp;
         deletedAny = true;
-        current = head;  // Reset current after head changes
     }
-
-    while (current != nullptr && current->next != nullptr) {
+    Node* current = head;
+    while (current && current->next) {
         if (current->next->val == i) {
             Node* temp = current->next;
-            current->next = temp->next;  // Fix: Correct pointer update
+            current->next = temp->next;
             delete temp;
             deletedAny = true;
-            // Don't advance current here as next node might also match
         } else {
             current = current->next;
         }
     }
-    
-    return deletedAny;  // Return whether we deleted anything
+    return deletedAny;
 }
 
-    int LinkedList::findSMAX(){
-        int max1=head->val;
-        int max2=-1;
-        Node*current=head;
-        while(current!=NULL){
-            if(current->val>max1){
-                max2=max1;
-                max1=current->val;
-            }
-            else if(current->val>max2&&current->val!=max1){
-                max2=current->val;
-            }
-            current=current->next;
+int LinkedList::findSMAX() {
+    if (!head) return -1;
+    int max1 = head->val;
+    int max2 = -1;
+    Node* current = head->next;
+    while (current) {
+        if (current->val > max1) {
+            max2 = max1;
+            max1 = current->val;
+        } else if (current->val > max2 && current->val != max1) {
+            max2 = current->val;
         }
-        return max2;
-    }
-    
-void LinkedList::insert(int val, int e) {
-    Node* newnode = new Node;
-    newnode->val = e;
-    newnode->next = nullptr;
-
-    if (head == nullptr) {
-        // List is empty, can't insert after specific value
-        delete newnode;
-        return;
-    }
-
-    Node* current = head;
-    // Find the node with value 'val'
-    while (current != nullptr && current->val != val) {
         current = current->next;
     }
+    return max2;
+}
 
-    if (current == nullptr) {
-        // Value 'val' not found in list
+void LinkedList::insert(int val, int e) {
+    Node* newnode = new Node{e, nullptr};
+    if (!head) {
         delete newnode;
         return;
     }
-
-    // Insert after 'current' node
+    Node* current = head;
+    while (current && current->val != val) {
+        current = current->next;
+    }
+    if (!current) {
+        delete newnode;
+        return;
+    }
     newnode->next = current->next;
     current->next = newnode;
-
-    // Update tail if inserting after last node
-    if (current == tail) {
-        tail = newnode;
-    }
+    if (current == tail) tail = newnode;
 }
 
 void LinkedList::insert(const int &e) {
-    Node* node = new Node;
-    node->val = e;
-    node->next = nullptr;
-    
-    if (head == nullptr) {
-        head = node;
+    Node* node = new Node{e, nullptr};
+    if (!head) {
+        head = tail = node;
     } else {
         tail->next = node;
+        tail = node;
     }
-    tail = node;
 }
 
 bool LinkedList::first(int &e) {
-    if (head == nullptr) return false;
+    if (!head) return false;
     e = head->val;
     current = head;
     return true;
 }
 
 bool LinkedList::next(int &e) {
-    if (current == nullptr || current->next == nullptr) return false;
+    if (!current || !current->next) return false;
     current = current->next;
-    e = current->val;  // Fixed: should be 'val' not 'elem'
+    e = current->val;
     return true;
 }
-int LinkedList::counter(){
-    Node* current=head;
-    int count=0;
-    while(current->next!=NULL){
-        current=current->next;
-        count++;
-    }
-    return count+1;
-    
-}
-void LinkedList::Conc(LinkedList &A, LinkedList&B){
-   if (A.head == nullptr) {
-        // If A is empty, assign B
-        this->head = B.head;
-        return;
-    }
-    this->head = A.head;
 
-    // Traverse to the end of A
-    Node* current = A.head;
-    while (current->next != nullptr) {
+int LinkedList::counter() {
+    int count = 0;
+    Node* current = head;
+    while (current) {
+        count++;
         current = current->next;
     }
-
-    // Link last node of A to head of B
-    current->next = B.head;
-   
+    return count;
 }
-/*void LinkedList::insert(int pos,int&e){
-    Node*node=new Node;
-    node->next=NULL;
-    node->val=e;
-    Node*current=head;
-    int i=0;
-    while(current->next!=NULL&&i<pos-1){
-        current=current->next;
-        i++;
-    }
-    node->next = current->next; // New node points to successor
-current->next = node;
-}*/
-void LinkedList::remove(const int &val) {  
-        if (head == NULL) {
-            return;
-        }
-        
-        // Handle case where head needs to be deleted
-        if (head->val == val) {
-            Node* temp = head;
-            head = head->next;
-            delete temp;
-            return;
-        }
-        
-        current = head;
-        while (current->next!= NULL && current->next->val != val) {
-            current = current->next;
-        }
-        
-        if (current->next == NULL) {
-            return;  // Value not found
-        }
-        
-        Node* temp = current->next;
-        current->next = temp->next;
-        delete temp;
-    }
-    void LinkedList::insertBEFORE(int i,int val){
-        Node* node=new Node;
-        node->val=val;
-        if(head==NULL){
-            head->val=val;
-            head->next=nullptr;
-        }
-        Node*current=head;
-        int count=1;
-        while(current!=NULL&&count<i-1){
-            current=current->next;
-            count++;
-        }
-         node->next = current->next;
-    current->next = node;
-    }
 
-/*void DoubleLinkedList::insert(const int &e){
-    Node* node=new Node;
-    node->info=e;
-    if(head==NULL) {
-        head=node;
-        node->next=NULL;
-    }
-    Node*current=head;
-    while(current->next!=NULL){
-        current=current->next;
-    }
-    node->prev=current;
-    current->next=node;
-    node->next=NULL;}*/
-
-
-LinkedList::~LinkedList(){
-    if(head==NULL){
+void LinkedList::Conc(LinkedList &A, LinkedList &B) {
+    if (!A.head) {
+        head = B.head;
+        tail = B.tail;
         return;
     }
-    Node*current=head;
-    while(current->next!=NULL){
-       Node*next=current->next;
-       delete current;
-       current=next;
-        
+    head = A.head;
+    Node* current = A.head;
+    while (current->next) {
+        current = current->next;
     }
-    
-    return;
+    current->next = B.head;
+    if (B.tail) tail = B.tail;
 }
-void LinkedList:: PrintBackWard(Node*head) {
-    if(head==nullptr)return;
-    else if(head->next==nullptr) cout<<head->val;
-     else{
-       PrintBackWard(head->next);
-       cout<<head->val;
-     }
+
+void LinkedList::remove(const int &val) {
+    if (!head) return;
+    if (head->val == val) {
+        Node* temp = head;
+        head = head->next;
+        delete temp;
+        return;
     }
-void LinkedList::Reverse(Node*p){
-  if(p->next==NULL){
-    head=p; //Now head is the last node of the list
-    return;
-  }
-  Reverse(p->next);
-  //Executed after the recursive call
-  Node*q=p->next; //The old link
-  q->next=p;  //The new link points from the last node(head now) to its previous node
-  p->next=NULL; //delete the old link pointing from the previous to the last node
+    Node* current = head;
+    while (current->next && current->next->val != val) {
+        current = current->next;
+    }
+    if (!current->next) return;
+    Node* temp = current->next;
+    current->next = temp->next;
+    delete temp;
+    if (!current->next) tail = current;
 }
-Node* LinkedList::merge(Node*a,Node*b){
-    if(a==nullptr) return b;
-    if(b==nullptr) return a;
-    Node*c;
-    if(a->val<b->val){
-        c=a;
-        c->next=merge(a->next,b);
+
+void LinkedList::insertBEFORE(int i, int val) {
+    Node* node = new Node{val, nullptr};
+    if (i <= 1 || !head) {
+        node->next = head;
+        head = node;
+        if (!tail) tail = node;
+        return;
+    }
+    Node* current = head;
+    int count = 1;
+    while (current && count < i - 1) {
+        current = current->next;
+        count++;
+    }
+    if (!current) return;
+    node->next = current->next;
+    current->next = node;
+    if (!node->next) tail = node;
 }
-else if(b->val<a->val){
-c=b;
-c->next=merge(a,b->next);
+
+LinkedList::~LinkedList() {
+    Node* current = head;
+    while (current) {
+        Node* next = current->next;
+        delete current;
+        current = next;
+    }
 }
-return c;
+
+void LinkedList::PrintBackWard(Node* head) {
+    if (!head) return;
+    PrintBackWard(head->next);
+    cout << head->val << " ";
 }
-Node*LinkedList::FindMiddleNode(){
-    Node*slow=head;
-    Node*fast=head;
-    while(fast!=NULL&&fast->next){
-        slow=slow->next;
-        fast=fast->next->next;
+
+void LinkedList::Reverse(Node* p) {
+    if (!p || !p->next) {
+        head = p;
+        return;
+    }
+    Reverse(p->next);
+    p->next->next = p;
+    p->next = nullptr;
 }
-return slow;
+
+LinkedList::Node* LinkedList::merge(LinkedList::Node* a, LinkedList::Node* b) {
+    if (!a) return b;
+    if (!b) return a;
+    if (a->val < b->val) {
+        a->next = merge(a->next, b);
+        return a;
+    } else {
+        b->next = merge(a, b->next);
+        return b;
+    }
 }
-pair<Node*,Node*>LinkedList::split(Node*head ){ //This is your linked list
-Node*a=head;
-Node*mid=FindMiddleNode(head);
-Node*b=mid->next;
-mid->next=NULL;
-return {a,b}; //pair<,> is used to return multiple values. Why? Because return a,b; will only return b since comma operator is of higher precedence.
+
+LinkedList::Node* LinkedList::FindMiddleNode() {
+    Node* slow = head;
+    Node* fast = head;
+    while (fast && fast->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    return slow;
 }
-Node* LinkedList::mergeSort(Node*head){
-if(head==nullptr || head->next=NULL){
-return head;
+
+pair<LinkedList::Node*, LinkedList::Node*> LinkedList::split(LinkedList::Node* head) {
+    if (!head || !head->next) return {head, nullptr};
+    Node* slow = head;
+    Node* fast = head->next;
+    while (fast && fast->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    Node* second = slow->next;
+    slow->next = nullptr;
+    return {head, second};
 }
-Node*mid=FindMiddleNode(head);
-Node*a=head;
-Node*b=mid->next;
-mid->next=NULL;
-a=mergeSort(a); //Recursive sort
-b=mergeSort(b);
-return merge(a,b);
+
+LinkedList::Node* LinkedList::mergeSort(LinkedList::Node* head) {
+    if (!head || !head->next) return head;
+    auto [a, b] = split(head);
+    a = mergeSort(a);
+    b = mergeSort(b);
+    return merge(a, b);
 }
-Node*LinkedList::PrintwithNoDuplicates(Node*head){
-    Node*current=head;
-    while(current!=nullptr&&current->next!=nullptr){
-        if(current->val!=current->next->val) current=current->next;
-        else{ current=current->next->next;}
+
+LinkedList::Node* LinkedList::PrintwithNoDuplicates(LinkedList::Node* head) {
+    Node* current = head;
+    while (current && current->next) {
+        if (current->val == current->next->val) {
+            current = current->next->next;
+        } else {
+            current = current->next;
+        }
     }
     return head;
 }
-Node*LinkedList::removeDuplicates(Node*head){
-     Node*current=head;
-    while(current!=nullptr&&current->next!=nullptr){
-        if(current->val!=current->next->val) current=current->next;
-        else{ Node*temp=current->next; //to be deleted
-             current->next=current->next->next;
-            delete temp;}
-        
+
+LinkedList::Node* LinkedList::removeDuplicates(LinkedList::Node* head) {
+    Node* current = head;
+    while (current && current->next) {
+        if (current->val == current->next->val) {
+            Node* temp = current->next;
+            current->next = temp->next;
+            delete temp;
+        } else {
+            current = current->next;
+        }
     }
     return head;
 }
+
 int main() {
-  
+    LinkedList list;
+    list.insert(10);
+    list.insert(20);
+    list.insert(30);
+    list.insert(20);
+    list.insert(40);
+
+    cout << "Second max: " << list.findSMAX() << endl;
+
+    int mid = list.findMiddleElement(list);
+    cout << "Middle element: " << mid << endl;
+
+    cout << "List printed backward: ";
+    list.PrintBackWard(list.getHead());
+    cout << endl;
+
     return 0;
 }
