@@ -22,7 +22,7 @@ public:
     bool next(int &e);
     int counter();
     void remove(const int &val);
-    bool deleterAll(int i);
+    bool deleterAll();
     void PrintBackWard(Node*);
     LinkedList::Node* merge(LinkedList::Node *a, LinkedList::Node *b);
     LinkedList::Node* FindMiddleNode();
@@ -54,27 +54,19 @@ int LinkedList::findMiddleElement(LinkedList &A) {
     return slow ? slow->val : -1;
 }
 
-bool LinkedList::deleterAll(int i) {
-    if (!head) return false;
-    bool deletedAny = false;
-    while (head && head->val == i) {
+bool LinkedList::deleterAll() {
+   if (!head) return false;
+
+    while (head != nullptr) {
         Node* temp = head;
         head = head->next;
         delete temp;
-        deletedAny = true;
     }
-    Node* current = head;
-    while (current && current->next) {
-        if (current->next->val == i) {
-            Node* temp = current->next;
-            current->next = temp->next;
-            delete temp;
-            deletedAny = true;
-        } else {
-            current = current->next;
-        }
-    }
-    return deletedAny;
+
+    tail = nullptr;
+    current = nullptr;
+
+    return true;
 }
 
 int LinkedList::findSMAX() {
